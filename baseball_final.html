@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+
+  <style>
+    circle.dimple-series-1 {
+        fill: red;
+    }
+
+    h2 {
+      text-align: center;
+    }
+  </style>  
+ 
+  <script type="text/javascript">
+      function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+          var margin = 75,
+              width = 1400 - margin,
+              height = 500 - margin;
+
+          var title = d3.select("body")
+            .append('h2')
+            .text("Left-handed Hitters Have Better Batting Average While Height Does not Matter");
+
+          var text = d3.select("body")
+            .append('h4')
+            .text("Players with left handedness usually have better batting average than right handed players. Left handedness holds the advantage when the height is in the range of 67 to 77. Batting average doesn't vary by height for the most of the data set. At the extremes it does vary a little bit but it might be because there are so few data points.");
+
+          var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+
+
+
+      /*
+        Dimple.js Chart construction code
+      */
+
+          var myChart = new dimple.chart(svg, data);
+          var xAxis = myChart.addCategoryAxis("x", "Height"); 
+          var yAxis = myChart.addMeasureAxis("y", "BattingAvg");
+          xAxis.title = "Height inches";
+          yAxis.title = "Mean Batting Average of All Players in the Data Set";
+
+          
+
+      /*
+        Set y axis to make it more reasonable
+      */
+      
+          yAxis.overrideMax = 0.4;
+          yAxis.overrideMin = 0.0;
+          yAxis.ticks = 8;
+          yAxis.tickFormat = ".2f";
+
+          var s = myChart.addSeries(["Handedness"], dimple.plot.scatter);
+       
+          s.aggregate = dimple.aggregateMethod.avg;
+
+          var myLegend = myChart.addLegend(1130, 80, 60, 100, "Right");
+ 
+      /*
+        Add color for different handedness
+      */
+         
+          myChart.assignColor("LeftHanded", "#4863A0");
+          myChart.assignColor("RightHanded", "#800000");
+          myChart.assignColor("BothHanded", "#FF7F00");
+
+
+          myChart.draw();
+
+          svg.append("text")
+             .attr("x", c._xPixels() + c._widthPixels() / 2)
+             .attr("y", c._yPixels() - 20)
+             .style("text-anchor", "middle")
+             .style("font-family", "sans-serif")
+             .text("My brilliant chart about a and b")
+ 
+    
+
+
+       };
+
+      </script>
+  </head>
+
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("baseball_data.csv", draw);
+  </script>
+</body>
+</html>
